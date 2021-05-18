@@ -11,8 +11,9 @@ import (
 
 // FCMTransport defines a httpTransport with a custom RoundTripper
 type FCMTransport struct {
-	T http.RoundTripper
-	GoogleCredentials []byte
+	T                     http.RoundTripper
+	GenerateTokenProvider func([]byte) (*tokenProvider, error)
+	GoogleCredentials     []byte
 }
 
 // tokenProvider contains an oauth2.TokenSource used to get a valid fcm token
@@ -21,16 +22,16 @@ type tokenProvider struct {
 }
 
 // CustomFCMTransport returns a FCMTransport
-func CustomFCMTransport(T http.RoundTripper, googleCredentials []byte) *FCMTransport {
+func CustomFCMTransport(T http.RoundTripper, generateTokenProvider func([]byte) (*tokenProvider, error), googleCredentials []byte) *FCMTransport {
 	if T == nil {
 		T = http.DefaultTransport
 	}
-	return &FCMTransport{T, googleCredentials}
+	return &FCMTransport{T, generateTokenProvider, googleCredentials}
 }
 
 // RoundTrip defines a custom round trip for FCMTransport that asks for a valid FCM token
 func (adt *FCMTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	tp, err := newFCMTokenProvider(adt.GoogleCredentials)
+	tp, err := adt.GenerateTokenProvider(adt.GoogleCredentials)
 	if err != nil {
 		return nil, err
 	}
@@ -38,12 +39,12 @@ func (adt *FCMTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Add("Authorization", "Bearer " + token)
+	req.Header.Add("Authorization", "Bearer "+token)
 	return adt.T.RoundTrip(req)
 }
 
-// newFCMTokenProvider gets a valid token for FCM
-func newFCMTokenProvider(googleCredentials []byte) (*tokenProvider, error) {
+// GenerateFCMTokenProvider gets a valid token for FCM
+func GenerateFCMTokenProvider(googleCredentials []byte) (*tokenProvider, error) {
 	cfg, err := google.JWTConfigFromJSON(googleCredentials, fcmScope)
 	if err != nil {
 		return nil, errors.New("fcm: failed to get JWT config for the firebase.messaging scope")
