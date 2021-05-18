@@ -11,7 +11,7 @@ import (
 
 // FCMTransport defines a httpTransport with a custom RoundTripper
 type FCMTransport struct {
-	T http.RoundTripper
+	T                 http.RoundTripper
 	GoogleCredentials []byte
 }
 
@@ -38,7 +38,7 @@ func (adt *FCMTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Add("Authorization", "Bearer " + token)
+	req.Header.Add("Authorization", "Bearer "+token)
 	return adt.T.RoundTrip(req)
 }
 
