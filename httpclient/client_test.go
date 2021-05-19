@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
+	. "github.com/SpazioDati/go-utils/httpclient"
 	"github.com/gin-gonic/gin"
 	"github.com/go-resty/resty/v2"
-	. "github.com/SpazioDati/go-utils/httpclient"
 	"github.com/stretchr/testify/assert"
 )
 

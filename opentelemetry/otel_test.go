@@ -7,9 +7,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/gin-gonic/gin"
 	. "github.com/SpazioDati/go-utils/opentelemetry"
 	"github.com/SpazioDati/go-utils/propagator"
+	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"go.opentelemetry.io/otel/attribute"
@@ -77,6 +77,14 @@ func ExampleGinMW() {
 
 func TestInit(t *testing.T) {
 	cleanup := Init(&Options{})
+	assert.NotNil(t, cleanup)
+
+	// if something is wrong inside the cleanup, the test will fail
+	cleanup()
+}
+
+func TestInitMetrics(t *testing.T) {
+	cleanup := InitMetrics(1234)
 	assert.NotNil(t, cleanup)
 
 	// if something is wrong inside the cleanup, the test will fail
