@@ -83,6 +83,14 @@ func TestInit(t *testing.T) {
 	cleanup()
 }
 
+func TestInitMetrics(t *testing.T) {
+	cleanup := InitMetrics(1234)
+	assert.NotNil(t, cleanup)
+
+	// if something is wrong inside the cleanup, the test will fail
+	cleanup()
+}
+
 func TestMwEmptyTrace(t *testing.T) {
 	assert := assert.New(t)
 
