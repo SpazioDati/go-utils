@@ -9,10 +9,12 @@ import (
 	"golang.org/x/oauth2/google"
 )
 
+type genTokenFunction func([]byte) (*tokenProvider, error)
+
 // FCMTransport defines a httpTransport with a custom RoundTripper
 type FCMTransport struct {
 	T                     http.RoundTripper
-	GenerateTokenProvider func([]byte) (*tokenProvider, error)
+	GenerateTokenProvider genTokenFunction
 	GoogleCredentials     []byte
 }
 
@@ -22,7 +24,7 @@ type tokenProvider struct {
 }
 
 // CustomFCMTransport returns a FCMTransport
-func CustomFCMTransport(T http.RoundTripper, generateTokenProvider func([]byte) (*tokenProvider, error), googleCredentials []byte) *FCMTransport {
+func CustomFCMTransport(T http.RoundTripper, generateTokenProvider genTokenFunction, googleCredentials []byte) *FCMTransport {
 	if T == nil {
 		T = http.DefaultTransport
 	}
