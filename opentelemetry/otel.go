@@ -155,7 +155,7 @@ func GinMW() func(c *gin.Context) {
 func GetFCMHTTPClient(googleCredentials []byte) *http.Client {
 	if isInitialized {
 		return &http.Client{
-			Transport: otelhttp.NewTransport(CustomFCMTransport(nil, googleCredentials)),
+			Transport: otelhttp.NewTransport(CustomFCMTransport(nil, GenerateFCMTokenProvider, googleCredentials)),
 		}
 	}
 
