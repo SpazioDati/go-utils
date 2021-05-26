@@ -91,3 +91,29 @@ func TestRatio(t *testing.T) {
 		assert.True(accepted)
 	}
 }
+
+func TestHealthCheckIsDropped(t *testing.T) {
+	assert := assert.New(t)
+
+	sampling := SampleByRatio(1.0)
+	assert.NotNil(sampling)
+	p := params()
+	p.Name = "grpc.health.v1.Health/Check"
+
+	out := sampling.ShouldSample(p)
+
+	assert.Equal(sdktrace.Drop, out.Decision)
+}
+
+func TestNotHealthCheck(t *testing.T) {
+	assert := assert.New(t)
+
+	sampling := SampleByRatio(1.0)
+	assert.NotNil(sampling)
+	p := params()
+	p.Name = "Not.a.health.check"
+
+	out := sampling.ShouldSample(p)
+
+	assert.Equal(sdktrace.RecordAndSample, out.Decision)
+}
