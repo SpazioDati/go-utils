@@ -31,6 +31,11 @@ func (ratio SampleByRatio) ShouldSample(p sdktrace.SamplingParameters) (ret sdkt
 		return
 	}
 
+	if p.Name == "grpc.health.v1.Health/Check" {
+		ret.Decision = sdktrace.Drop
+		return
+	}
+
 	if ratio >= 1 {
 		return
 	}
